@@ -3,7 +3,7 @@ CXXFLAGS=-g -Wall
 
 all: $(TARGET)
 
-$(TARGET) : main.cpp
+$(TARGET) : main.cpp ethernet.cpp
 	$(LINK.cpp) $^ $(LOADLIBES) $(LDLIBS) -o $@ -lpcap
 
 clean:
