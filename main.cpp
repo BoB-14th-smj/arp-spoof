@@ -55,20 +55,21 @@ int main(int argc, char* argv[]) {
 
     uint16_t couple = (argc - 2)/2;
     ArpPacket** arpPacket = (ArpPacket**)malloc(sizeof(ArpPacket)* couple);
+    Mac** mac = (Mac**)malloc(sizeof(Mac)*couple);
 
     //Attack send -arp
     for(int i=0;i<couple; i++){
         char* sender_ip = argv[i*2 + 2];
         char* target_ip = argv[i*2 + 3];
-        arpPacket[i] = attack_arp(dev,sender_ip , target_ip, pcap);
+        mac[i] = (Mac*)malloc(sizeof(Mac));
+        arpPacket[i] = attack_arp(dev,sender_ip , target_ip, pcap, mac[i]);
     }
 
-    //set Info
-    // Info info(dev, )
-
+    //Set Info
+    Info info(dev, *arpPacket[0], mac[0]);
+    info.print_info();
 
     //packet check
-    Mac mac;
     const u_char* packet;
     Ethernet* ethernet ;
 
@@ -101,8 +102,7 @@ int main(int argc, char* argv[]) {
 
 
 
-
-
+    free(mac);
     free(arpPacket);
     pcap_close(pcap);
 }

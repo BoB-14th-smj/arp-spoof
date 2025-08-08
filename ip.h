@@ -2,14 +2,16 @@
 
 #include "arp.h"
 #include <cstdint>
+#include <netinet/in.h>
 #include <string>
 
 struct Ip {
 public:
     uint32_t ip_;
     Ip() {}
-    Ip(const uint32_t r) : ip_(r) {}
-    Ip(const std::string r){
+    Ip(uint32_t r) {
+        ip_ = ntohl(r); }
+    Ip(std::string r){
         ip_ = stoi_ip(r);
     }
 

@@ -39,5 +39,32 @@ struct Info{
         my_mac_ = get_my_mac(dev);
         my_ip_ = get_my_ip(dev);
     }
+
+    Info(char* dev, ArpPacket& packet, Mac* mac) {
+        Ethernet ethernet = packet.get_ethernet();
+        Arp arp = packet.get_arp();
+
+        s_mac_ = Mac(ethernet.get_s_mac());
+        d_mac_ = *mac;
+        s_ip_ = Ip(arp.get_sip());
+        d_ip_ = arp.get_tip();
+
+        my_mac_ = get_my_mac(dev);
+        my_ip_ = get_my_ip(dev);
+    }
+
+
+
+    void print_info(void){
+        s_mac_.print_mac();
+        s_ip_.print_ip();
+        d_mac_.print_mac();
+        s_ip_.print_ip();
+        my_mac_.print_mac();
+        my_ip_.print_ip();
+
+
+
+    }
 };
 
