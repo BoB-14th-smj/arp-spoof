@@ -29,7 +29,7 @@ string get_my_mac(char* interface){
 
     string command =  "cat /sys/class/net/" + if_ + "/address";
     string result = get_command_output(command);
-    printf("%s", result.c_str());
+    // printf("%s", result.c_str());
     return result;
 }
 
