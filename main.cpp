@@ -13,6 +13,8 @@
 #include "arp.h"
 #include "packet.h"
 #include "attack.h"
+#include "mac.h"
+#include "ip.h"
 
 
 void usage() {
@@ -50,14 +52,57 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "couldn't open device %s(%s)\n", dev, errbuf);
         return EXIT_FAILURE;
     }
-    ArpPacket* arpPacket = (ArpPacket*)malloc(sizeof(ArpPacket) * (argc - 2)/2);
 
-    for(int i=2;i<argc; i+=2){
-        attack_arp(dev ,argv[i] , argv[i+1],  pcap);
+    uint16_t couple = (argc - 2)/2;
+    ArpPacket** arpPacket = (ArpPacket**)malloc(sizeof(ArpPacket)* couple);
+
+    //Attack send -arp
+    for(int i=0;i<couple; i++){
+        char* sender_ip = argv[i*2 + 2];
+        char* target_ip = argv[i*2 + 3];
+        arpPacket[i] = attack_arp(dev,sender_ip , target_ip, pcap);
     }
 
+    //set Info
+    // Info info(dev, )
+
+
+    //packet check
+    Mac mac;
+    const u_char* packet;
+    Ethernet* ethernet ;
+
+    while (true) {
+        struct pcap_pkthdr* header;
+        // printf("\nWHERE");
+
+        int res = pcap_next_ex(pcap, &header, &packet);
+        if (res == 0){
+            continue; //time out
+        } else if(res <0){ // error
+            printf("pcap_next_ex return %d(%s)\n", res, pcap_geterr(pcap));
+            break;
+        }
+
+
+
+        ethernet = (Ethernet*) packet;
+        ethernet->print_ethernet();
+        stoi_mac(mac_, tmp);
+        if(ethernet->get_ether_type() != 0x0806){
+            continue;
+        }
+        else if(ethernet->get_d_mac() == tmp){
+            continue;
+        }
+        break;
+    }
+
+
+
+
+
+
     free(arpPacket);
-
-
     pcap_close(pcap);
 }
