@@ -39,5 +39,5 @@ struct Info{
         my_mac_ = get_my_mac(dev);
         my_ip_ = get_my_ip(dev);
     }
-}
+};
 
