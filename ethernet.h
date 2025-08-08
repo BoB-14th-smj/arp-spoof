@@ -68,6 +68,7 @@ public:
             printf("%02x " , s_mac_[i]);
         }
         printf("%04x", ntohs(e_type));
+        printf("\n");
 
 
     }
