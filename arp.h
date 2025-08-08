@@ -115,7 +115,6 @@ public:
         }
         printf("%02x %02x %02x %02x ", (s_ip_ >> 24) & 0xFF, (s_ip_ >> 16) & 0xFF, (s_ip_ >> 8) & 0xFF, (s_ip_) & 0xFF);
 
-        printf("%04x ", operaton);
         for (int i=0;i<6;i++){
             printf("%02x ", t_mac_[i]);
         }
