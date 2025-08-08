@@ -5,9 +5,14 @@
 #include <pcap/pcap.h>
 #include <stdlib.h>
 #include "ethernet.h"
+#include "packet.h"
 #include <string>
 #include <sys/types.h>
 #include <unistd.h>
+#include "ethernet.h"
+#include "arp.h"
+#include "packet.h"
+#include "attack.h"
 
 
 void usage() {
@@ -29,6 +34,8 @@ int check_arg(int argc, char*argv){
 }
 
 
+
+
 int main(int argc, char* argv[]) {
     if(check_arg(argc, *argv)){
         return EXIT_FAILURE;
@@ -43,10 +50,13 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "couldn't open device %s(%s)\n", dev, errbuf);
         return EXIT_FAILURE;
     }
+    ArpPacket* arpPacket = (ArpPacket*)malloc(sizeof(ArpPacket) * (argc - 2)/2);
 
     for(int i=2;i<argc; i+=2){
-        // attack_arp(dev ,argv[i] , argv[i+1],  pcap);
+        attack_arp(dev ,argv[i] , argv[i+1],  pcap);
     }
+
+    free(arpPacket);
 
 
     pcap_close(pcap);
