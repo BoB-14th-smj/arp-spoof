@@ -31,5 +31,5 @@ public:
     uint8_t* bytes() { return mac_; }
 
     bool operator == (const Mac& r) const { return memcmp(mac_, r.mac_, 6) == 0; }
-
+    bool operator != (const Mac& r) const { return memcmp(mac_, r.mac_, 6) != 0; }
 };

