@@ -40,12 +40,12 @@ ArpPacket* arp_reply(pcap_t* pcap, char* dev, std::string d_mac_, std::string s_
 
 }
 
-ArpPacket* arp_reply(pcap_t* pcap, ArpPacket* packet){
+void arp_reply(pcap_t* pcap, ArpPacket* packet){
     if(pcap_sendpacket(pcap, (u_char*)packet , sizeof(*packet)) !=0){
         printf("ERROR");
         exit(1);
     }
-    return packet;
+    // return packet;
 }
 
 ArpPacket* get_packet(pcap_t* pcap, std::string mac_){

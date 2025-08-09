@@ -10,4 +10,4 @@ void arp_request(pcap_t* pcap, char* dev, std::string d_mac_, std::string s_mac_
 ArpPacket* arp_reply(pcap_t* pcap, char* dev, std::string d_mac_, std::string s_mac_, char* sender_ip, char* target_ip);
 ArpPacket* get_packet(pcap_t* pcap, std::string mac_);
 ArpPacket* attack_arp(char* dev, char* sender_ip, char* target_ip, pcap_t* pcap, Mac* target_mac_add);
-ArpPacket* arp_reply(pcap_t* pcap, ArpPacket* packet);
+void arp_reply(pcap_t* pcap, ArpPacket* packet);

