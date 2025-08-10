@@ -2,9 +2,9 @@
 BoB 14기 보안제품개발 서민재 네트워크 과제 - arp-spoof
 
 
-# 영
-[유튜브 영상 링크](https://youtu.be/xqrNS3JexEY) -> 공격자 시점
-[유튜브 영상 링크](https://youtu.be/45pjVJ7BuZc) -> 피해자 시점
+# 영상
+- [유튜브 영상 링크](https://youtu.be/xqrNS3JexEY) -> 공격자 시점
+- [유튜브 영상 링크](https://youtu.be/45pjVJ7BuZc) -> 피해자 시점
 
 
 
