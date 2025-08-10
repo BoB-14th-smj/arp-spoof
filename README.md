@@ -22,3 +22,12 @@ BoB 14기 보안제품개발 서민재 네트워크 과제 - arp-spoof
 - https://redcoder.tistory.com/111
 
 
+### memcpy
+- https://blockdmask.tistory.com/442
+
+
+### new/delete
+- https://boycoding.tistory.com/204
+
+### MAC IP
+- https://gitlab.com/gilgil/send-arp-test/-/tree/master/src?ref_type=heads -> 대부분의 MAC IP 관련 코드는 많이 참
